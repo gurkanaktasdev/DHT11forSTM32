@@ -10,7 +10,6 @@
 static TIM_HandleTypeDef *dht_timer;
 static GPIO_TypeDef *dht_port;
 static uint32_t dht_pin;
-uint32_t dtime,dtime2,dtime3;
 
 /*
  *	@brief : İlgili dosyada timer ve GPIO konfigürasyonları için yapılandırılmıştır.
@@ -78,7 +77,6 @@ static uint8_t StartSignalDHT11(void)
 	while(HAL_GPIO_ReadPin(dht_port, dht_pin) == GPIO_PIN_SET)
 		{if(__HAL_TIM_GET_COUNTER(dht_timer) > 200) break; }
 	time = __HAL_TIM_GET_COUNTER(dht_timer);
-	dtime = time;
 	if(time < 20) return 1;
 	return 0;
 }
@@ -97,14 +95,12 @@ static uint8_t IsReadyDHT11(void)
 		while(HAL_GPIO_ReadPin(dht_port, dht_pin) == GPIO_PIN_RESET)
 		{if(__HAL_TIM_GET_COUNTER(dht_timer) > 120) break; }
 		time = __HAL_TIM_GET_COUNTER(dht_timer);
-		dtime2 = time;
 		if(time < 90 && time > 70)						// datasheet e göre 80us LOW olmalı
 		{
 			__HAL_TIM_SET_COUNTER(dht_timer,0);
 			while(HAL_GPIO_ReadPin(dht_port, dht_pin) == GPIO_PIN_SET)
 			{if(__HAL_TIM_GET_COUNTER(dht_timer) > 120) break; }
 			time = __HAL_TIM_GET_COUNTER(dht_timer);
-			dtime3 = time;
 			if(time < 94 && time > 68){return 1;}		// datasheet e göre 80us HIGH olmalı
 		}
 	}
